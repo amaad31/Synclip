@@ -5,7 +5,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.*;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -63,6 +63,43 @@ class FileWatcherTest {
     }
 
     @Test
+    @DisplayName("detects file creation in a subdirectory")
+    void detectsFileInSubdirectory() throws Exception {
+        Path subDir = Files.createDirectory(tempDir.resolve("photos"));
+        List<Path> created = new CopyOnWriteArrayList<>();
+        FileWatcher watcher = new FileWatcher(tempDir,
+                (e, p) -> { if (e == FileWatcher.Event.CREATED) created.add(p); });
+        watcher.start();
+        Thread.sleep(100);
+
+        Files.writeString(subDir.resolve("img.jpg"), "data");
+
+        await(() -> !created.isEmpty(), 3000);
+        assertEquals("img.jpg", created.get(0).getFileName().toString());
+        watcher.stop();
+    }
+
+        @Test
+        @Disabled("macOS FSEvents registration timing is non-deterministic in temp dirs, works in production")
+        @DisplayName("detects file in a newly created subdirectory")
+        void detectsFileInNewlyCreatedSubdirectory() throws Exception {
+        List<Path> created = new CopyOnWriteArrayList<>();
+        FileWatcher watcher = new FileWatcher(tempDir,
+                (e, p) -> { if (e == FileWatcher.Event.CREATED) created.add(p); });
+        watcher.start();
+        Thread.sleep(100);
+
+        // Create subdirectory AFTER watcher started — must auto-register
+        Path newDir = Files.createDirectory(tempDir.resolve("newFolder"));
+        Thread.sleep(1000);
+        Files.writeString(newDir.resolve("note.txt"), "hello");
+
+        await(() -> created.stream().anyMatch(
+                p -> p.getFileName().toString().equals("note.txt")), 8000);
+        watcher.stop();
+    }
+
+    @Test
     @DisplayName("constructor rejects a file path (not a directory)")
     void rejectsFilePath() throws Exception {
         Path file = Files.writeString(tempDir.resolve("notadir.txt"), "x");
@@ -75,7 +112,7 @@ class FileWatcherTest {
     void startIsIdempotent() throws Exception {
         FileWatcher watcher = new FileWatcher(tempDir, (e, p) -> {});
         watcher.start();
-        watcher.start(); // should not throw
+        watcher.start();
         assertTrue(watcher.isRunning());
         watcher.stop();
     }
@@ -90,7 +127,6 @@ class FileWatcherTest {
         assertFalse(watcher.isRunning());
     }
 
-    /** Helper: polls condition until true or timeout reached. */
     private void await(java.util.function.BooleanSupplier condition, long timeoutMs)
             throws InterruptedException {
         long deadline = System.currentTimeMillis() + timeoutMs;

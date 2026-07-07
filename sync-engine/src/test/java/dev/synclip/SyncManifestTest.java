@@ -1,132 +1,121 @@
 package dev.synclip;
 
 import org.junit.jupiter.api.*;
-
-import java.sql.SQLException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class SyncManifestTest {
 
-    private SyncManifest manifest;
+    private SyncManifest mac1;
+    private SyncManifest mac2;
 
     @BeforeEach
-    void setUp() throws SQLException {
-        manifest = new SyncManifest(); // in-memory DB, fresh for every test
+    void setUp() throws Exception {
+        mac1 = new SyncManifest("mac-amaad");
+        mac2 = new SyncManifest("windows-amaad");
     }
 
     @AfterEach
-    void tearDown() throws SQLException {
-        manifest.close();
+    void tearDown() throws Exception {
+        mac1.close();
+        mac2.close();
     }
 
     // -------------------------------------------------------------------------
-    // upsert + getStatus
+    // Grundfunktionen
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("new chunk is inserted as PENDING")
-    void newChunkIsInsertedAsPending() throws SQLException {
-        manifest.upsert("file.txt", 0, "abc123");
-        assertEquals(SyncManifest.Status.PENDING, manifest.getStatus("file.txt", 0));
+    @DisplayName("neuer Chunk wird als PENDING eingefügt")
+    void newChunkIsInsertedAsPending() throws Exception {
+        mac1.upsert("file.txt", 0, "abc123");
+        assertEquals(SyncManifest.Status.PENDING, mac1.getStatus("file.txt", 0));
     }
 
     @Test
-    @DisplayName("unknown chunk returns null status")
-    void unknownChunkReturnsNull() throws SQLException {
-        assertNull(manifest.getStatus("ghost.txt", 0));
+    @DisplayName("markDone setzt Status auf DONE")
+    void markDoneSetsStatusToDone() throws Exception {
+        mac1.upsert("file.txt", 0, "abc123");
+        mac1.markDone("file.txt", 0);
+        assertEquals(SyncManifest.Status.DONE, mac1.getStatus("file.txt", 0));
     }
 
     @Test
-    @DisplayName("markDone sets status to DONE")
-    void markDoneSetsStatusToDone() throws SQLException {
-        manifest.upsert("file.txt", 0, "abc123");
-        manifest.markDone("file.txt", 0);
-        assertEquals(SyncManifest.Status.DONE, manifest.getStatus("file.txt", 0));
+    @DisplayName("gleicher Hash behält Status DONE — Delta Sync")
+    void sameHashKeepsStatusDone() throws Exception {
+        mac1.upsert("file.txt", 0, "abc123");
+        mac1.markDone("file.txt", 0);
+        mac1.upsert("file.txt", 0, "abc123"); // gleicher Hash
+        assertEquals(SyncManifest.Status.DONE, mac1.getStatus("file.txt", 0));
     }
 
     @Test
-    @DisplayName("upsert with same hash keeps status DONE")
-    void sameHashKeepsStatusDone() throws SQLException {
-        manifest.upsert("file.txt", 0, "abc123");
-        manifest.markDone("file.txt", 0);
-
-        manifest.upsert("file.txt", 0, "abc123"); // same hash
-        assertEquals(SyncManifest.Status.DONE, manifest.getStatus("file.txt", 0));
-    }
-
-    @Test
-    @DisplayName("upsert with changed hash resets status to PENDING")
-    void changedHashResetsStatusToPending() throws SQLException {
-        manifest.upsert("file.txt", 0, "abc123");
-        manifest.markDone("file.txt", 0);
-
-        manifest.upsert("file.txt", 0, "xyz999"); // hash changed!
-        assertEquals(SyncManifest.Status.PENDING, manifest.getStatus("file.txt", 0));
+    @DisplayName("geänderter Hash setzt Status zurück auf PENDING")
+    void changedHashResetsStatusToPending() throws Exception {
+        mac1.upsert("file.txt", 0, "abc123");
+        mac1.markDone("file.txt", 0);
+        mac1.upsert("file.txt", 0, "xyz999"); // Hash geändert!
+        assertEquals(SyncManifest.Status.PENDING, mac1.getStatus("file.txt", 0));
     }
 
     // -------------------------------------------------------------------------
-    // getHash
+    // Device-ID Isolation — das Neue in Day 5
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("getHash returns stored hash")
-    void getHashReturnsStoredHash() throws SQLException {
-        manifest.upsert("file.txt", 0, "abc123");
-        assertEquals("abc123", manifest.getHash("file.txt", 0));
+    @DisplayName("zwei Geräte tracken denselben Chunk unabhängig voneinander")
+    void twoDevicesTrackIndependently() throws Exception {
+        mac1.upsert("foto.jpg", 0, "abc123");
+        mac2.upsert("foto.jpg", 0, "abc123");
+
+        mac1.markDone("foto.jpg", 0);
+
+        // Mac 1 ist fertig, Mac 2 noch nicht
+        assertEquals(SyncManifest.Status.DONE,    mac1.getStatus("foto.jpg", 0));
+        assertEquals(SyncManifest.Status.PENDING, mac2.getStatus("foto.jpg", 0));
     }
 
     @Test
-    @DisplayName("getHash returns null for unknown chunk")
-    void getHashReturnsNullForUnknown() throws SQLException {
-        assertNull(manifest.getHash("ghost.txt", 0));
-    }
+    @DisplayName("Gerät 1 sieht keine Chunks von Gerät 2")
+    void deviceCannotSeeOtherDeviceChunks() throws Exception {
+        mac2.upsert("secret.txt", 0, "abc123");
 
-    // -------------------------------------------------------------------------
-    // countPending
-    // -------------------------------------------------------------------------
-
-    @Test
-    @DisplayName("countPending returns correct number of pending chunks")
-    void countPendingReturnsCorrectCount() throws SQLException {
-        manifest.upsert("file.txt", 0, "h0");
-        manifest.upsert("file.txt", 1, "h1");
-        manifest.upsert("file.txt", 2, "h2");
-        manifest.markDone("file.txt", 0);
-
-        assertEquals(2, manifest.countPending("file.txt"));
+        // mac1 hat das nie eingefügt — muss null zurückgeben
+        assertNull(mac1.getStatus("secret.txt", 0));
     }
 
     @Test
-    @DisplayName("countPending returns 0 when all chunks are done")
-    void countPendingZeroWhenAllDone() throws SQLException {
-        manifest.upsert("file.txt", 0, "h0");
-        manifest.markDone("file.txt", 0);
-        assertEquals(0, manifest.countPending("file.txt"));
-    }
+    @DisplayName("removeFile löscht nur Chunks des eigenen Geräts")
+    void removeFileOnlyAffectsOwnDevice() throws Exception {
+        mac1.upsert("file.txt", 0, "abc123");
+        mac2.upsert("file.txt", 0, "abc123");
 
-    // -------------------------------------------------------------------------
-    // removeFile
-    // -------------------------------------------------------------------------
+        mac1.removeFile("file.txt");
 
-    @Test
-    @DisplayName("removeFile deletes all chunks for a file")
-    void removeFileDeletesAllChunks() throws SQLException {
-        manifest.upsert("file.txt", 0, "h0");
-        manifest.upsert("file.txt", 1, "h1");
-        manifest.removeFile("file.txt");
-
-        assertNull(manifest.getStatus("file.txt", 0));
-        assertNull(manifest.getStatus("file.txt", 1));
+        // mac1 gelöscht, mac2 unberührt
+        assertNull(mac1.getStatus("file.txt", 0));
+        assertNotNull(mac2.getStatus("file.txt", 0));
     }
 
     @Test
-    @DisplayName("removeFile does not affect other files")
-    void removeFileDoesNotAffectOtherFiles() throws SQLException {
-        manifest.upsert("a.txt", 0, "h0");
-        manifest.upsert("b.txt", 0, "h1");
-        manifest.removeFile("a.txt");
+    @DisplayName("countPending zählt nur PENDING Chunks des eigenen Geräts")
+    void countPendingOnlyCountsOwnDevice() throws Exception {
+        mac1.upsert("file.txt", 0, "h0");
+        mac1.upsert("file.txt", 1, "h1");
+        mac1.markDone("file.txt", 0);
 
-        assertNotNull(manifest.getStatus("b.txt", 0));
+        mac2.upsert("file.txt", 0, "h0");
+        mac2.upsert("file.txt", 1, "h1");
+        mac2.upsert("file.txt", 2, "h2");
+
+        // mac1 hat 1 pending, mac2 hat 3 pending — getrennt!
+        assertEquals(1, mac1.countPending("file.txt"));
+        assertEquals(3, mac2.countPending("file.txt"));
+    }
+
+    @Test
+    @DisplayName("getDeviceId gibt die korrekte ID zurück")
+    void getDeviceIdReturnsCorrectId() throws Exception {
+        assertEquals("mac-amaad", mac1.getDeviceId());
+        assertEquals("windows-amaad",  mac2.getDeviceId());
     }
 }

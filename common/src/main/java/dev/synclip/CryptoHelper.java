@@ -9,7 +9,7 @@ import java.security.*;
  *
  * Why AES-GCM?
  *  - AES-256: military-grade symmetric encryption
- *  - GCM mode: also authenticates the ciphertext — detects tampering
+ *  - GCM mode: also authenticates the ciphertext, detects tampering
  *  - Each encryption uses a random 12-byte IV so the same plaintext
  *    always produces different ciphertext (prevents pattern analysis)
  *

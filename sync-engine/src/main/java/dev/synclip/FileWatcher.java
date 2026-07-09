@@ -7,7 +7,7 @@ import java.util.function.BiConsumer;
 
 /**
  * Watches a directory recursively for file changes using the OS-level WatchService API.
- * On macOS this uses FSEvents, on Linux inotify — no polling.
+ * On macOS this uses FSEvents, on Linux inotify, no polling.
  *
  * Automatically registers new subdirectories as they are created.
  */

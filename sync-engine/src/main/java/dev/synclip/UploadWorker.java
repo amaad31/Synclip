@@ -54,7 +54,7 @@ public class UploadWorker implements AutoCloseable {
     public void uploadAll(String filePath, List<Chunker.Chunk> chunks)
             throws InterruptedException {
 
-        // Filter only PENDING chunks — skip already uploaded ones
+        // Filter only PENDING chunks, skip already uploaded ones
         List<Chunker.Chunk> pending = new ArrayList<>();
         for (Chunker.Chunk chunk : chunks) {
             try {
@@ -67,7 +67,7 @@ public class UploadWorker implements AutoCloseable {
             }
         }
 
-        if (pending.isEmpty()) return; // nothing to do — full delta sync hit
+        if (pending.isEmpty()) return; // nothing to do, full delta sync hit
 
         // Submit each chunk as a parallel task
         List<Future<Void>> futures = new ArrayList<>();
@@ -113,7 +113,7 @@ public class UploadWorker implements AutoCloseable {
         });
     }
 
-    /** Ensures the bucket exists — creates it if not. */
+    /** Ensures the bucket exists, creates it if not. */
     public void ensureBucket() throws Exception {
         boolean exists = minioClient.bucketExists(
                 BucketExistsArgs.builder().bucket(bucketName).build());

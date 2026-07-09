@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Generates and persists a unique device ID.
  * Created once on first start, stored in ~/.synclip/device.id
- * Every device gets a different ID — the server uses it to separate uploads.
+ * Every device gets a different ID, the server uses it to separate uploads.
  */
 public class DeviceIdentity {
 
@@ -20,7 +20,7 @@ public class DeviceIdentity {
         this.deviceId = loadOrCreate();
     }
 
-    /** Returns this device's unique ID — e.g. "mac-a3f9b2c1" */
+    /** Returns this device's unique ID, e.g. "mac-a3f9b2c1" */
     public String getDeviceId() {
         return deviceId;
     }
@@ -30,7 +30,7 @@ public class DeviceIdentity {
             return Files.readString(ID_FILE).trim();
         }
 
-        // First start — generate a new ID
+        // First start, generate a new ID
         String newId = generateId();
         Files.createDirectories(ID_FILE.getParent());
         Files.writeString(ID_FILE, newId);

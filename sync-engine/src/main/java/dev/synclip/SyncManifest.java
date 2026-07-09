@@ -5,7 +5,7 @@ import java.sql.*;
 
 /**
  * Tracks which chunks have been uploaded per device using SQLite.
- * Each device has its own chunk records — two Macs never overwrite each other.
+ * Each device has its own chunk records, two Macs never overwrite each other.
  *
  * Schema:
  *   chunks(device_id, file_path, chunk_index, hash, status)

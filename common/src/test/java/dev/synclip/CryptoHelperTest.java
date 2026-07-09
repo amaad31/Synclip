@@ -75,7 +75,7 @@ class CryptoHelperTest {
         byte[] plaintext  = "secret password".getBytes();
         byte[] ciphertext = crypto.encrypt(plaintext);
 
-        // naive substring check — real crypto review would be more rigorous
+        // naive substring check, real crypto review would be more rigorous
         outer:
         for (int i = 0; i <= ciphertext.length - plaintext.length; i++) {
             for (int j = 0; j < plaintext.length; j++) {

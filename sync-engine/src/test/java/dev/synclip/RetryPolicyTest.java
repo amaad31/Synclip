@@ -8,11 +8,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class RetryPolicyTest {
 
     // -------------------------------------------------------------------------
-    // Erfolgreiche Ausführung
+    // Successful execution
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("erfolgreiche Operation wird einmal ausgeführt")
+    @DisplayName("successful operation executes once")
     void successfulOperationExecutedOnce() throws Exception {
         AtomicInteger count = new AtomicInteger(0);
         RetryPolicy retry = new RetryPolicy(3, 0);
@@ -23,7 +23,7 @@ class RetryPolicyTest {
     }
 
     @Test
-    @DisplayName("gibt den Rückgabewert der Operation zurück")
+    @DisplayName("returns the operation result")
     void returnsResultOfOperation() throws Exception {
         RetryPolicy retry = new RetryPolicy(3, 0);
         String result = retry.execute(() -> "hello synclip");
@@ -35,7 +35,7 @@ class RetryPolicyTest {
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("wiederholt nach IOException — erfolgreich beim zweiten Versuch")
+    @DisplayName("retries after IOException and succeeds on second attempt")
     void retriesAfterIOException() throws Exception {
         AtomicInteger count = new AtomicInteger(0);
         RetryPolicy retry = new RetryPolicy(3, 0);
@@ -65,7 +65,7 @@ class RetryPolicyTest {
     }
 
     @Test
-    @DisplayName("wirft IOException nach allen fehlgeschlagenen Versuchen")
+    @DisplayName("throws IOException after all attempts fail")
     void throwsAfterAllAttemptsFail() {
         RetryPolicy retry = new RetryPolicy(3, 0);
 
@@ -77,7 +77,7 @@ class RetryPolicyTest {
     }
 
     @Test
-    @DisplayName("gibt nicht auf bei nicht-IOException — wirft sofort")
+    @DisplayName("does not retry on non-IOException and throws immediately")
     void doesNotRetryOnNonIOException() {
         AtomicInteger count = new AtomicInteger(0);
         RetryPolicy retry = new RetryPolicy(3, 0);
@@ -89,7 +89,7 @@ class RetryPolicyTest {
             })
         );
 
-        // Nur 1 Versuch — kein Retry bei RuntimeException
+        // Only 1 attempt, no retry on RuntimeException
         assertEquals(1, count.get());
     }
 
@@ -98,7 +98,7 @@ class RetryPolicyTest {
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("exponential backoff — wartet länger bei jedem Versuch")
+    @DisplayName("exponential backoff increases delay on each retry")
     void exponentialBackoffIncreasesDelay() {
         AtomicInteger count = new AtomicInteger(0);
         long[] timestamps = new long[3];
@@ -124,7 +124,7 @@ class RetryPolicyTest {
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("maxAttempts = 1 bedeutet kein Retry")
+    @DisplayName("maxAttempts = 1 means no retry")
     void maxAttemptsOneNoRetry() {
         AtomicInteger count = new AtomicInteger(0);
         RetryPolicy retry = new RetryPolicy(1, 0);
@@ -140,14 +140,14 @@ class RetryPolicyTest {
     }
 
     @Test
-    @DisplayName("Konstruktor lehnt maxAttempts < 1 ab")
+    @DisplayName("constructor rejects maxAttempts < 1")
     void constructorRejectsZeroAttempts() {
         assertThrows(IllegalArgumentException.class,
                 () -> new RetryPolicy(0, 100));
     }
 
     @Test
-    @DisplayName("Konstruktor lehnt negativen Delay ab")
+    @DisplayName("constructor rejects negative delay")
     void constructorRejectsNegativeDelay() {
         assertThrows(IllegalArgumentException.class,
                 () -> new RetryPolicy(3, -1));

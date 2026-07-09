@@ -21,11 +21,11 @@ class SyncManifestTest {
     }
 
     // -------------------------------------------------------------------------
-    // Grundfunktionen
+    // Basic operations
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("neuer Chunk wird als PENDING eingefügt")
+    @DisplayName("new chunk is inserted as PENDING")
     void newChunkIsInsertedAsPending() throws Exception {
         mac1.upsert("file.txt", 0, "abc123");
         assertEquals(SyncManifest.Status.PENDING, mac1.getStatus("file.txt", 0));
@@ -40,64 +40,64 @@ class SyncManifestTest {
     }
 
     @Test
-    @DisplayName("gleicher Hash behält Status DONE — Delta Sync")
+    @DisplayName("same hash keeps status DONE, delta sync")
     void sameHashKeepsStatusDone() throws Exception {
         mac1.upsert("file.txt", 0, "abc123");
         mac1.markDone("file.txt", 0);
-        mac1.upsert("file.txt", 0, "abc123"); // gleicher Hash
+        mac1.upsert("file.txt", 0, "abc123"); // same hash
         assertEquals(SyncManifest.Status.DONE, mac1.getStatus("file.txt", 0));
     }
 
     @Test
-    @DisplayName("geänderter Hash setzt Status zurück auf PENDING")
+    @DisplayName("changed hash resets status to PENDING")
     void changedHashResetsStatusToPending() throws Exception {
         mac1.upsert("file.txt", 0, "abc123");
         mac1.markDone("file.txt", 0);
-        mac1.upsert("file.txt", 0, "xyz999"); // Hash geändert!
+        mac1.upsert("file.txt", 0, "xyz999"); // hash changed!
         assertEquals(SyncManifest.Status.PENDING, mac1.getStatus("file.txt", 0));
     }
 
     // -------------------------------------------------------------------------
-    // Device-ID Isolation — das Neue in Day 5
+    // Device-ID isolation, new in Day 5
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("zwei Geräte tracken denselben Chunk unabhängig voneinander")
+    @DisplayName("two devices track the same chunk independently")
     void twoDevicesTrackIndependently() throws Exception {
         mac1.upsert("foto.jpg", 0, "abc123");
         mac2.upsert("foto.jpg", 0, "abc123");
 
         mac1.markDone("foto.jpg", 0);
 
-        // Mac 1 ist fertig, Mac 2 noch nicht
+        // Mac 1 is done, Mac 2 is still pending
         assertEquals(SyncManifest.Status.DONE,    mac1.getStatus("foto.jpg", 0));
         assertEquals(SyncManifest.Status.PENDING, mac2.getStatus("foto.jpg", 0));
     }
 
     @Test
-    @DisplayName("Gerät 1 sieht keine Chunks von Gerät 2")
+    @DisplayName("device 1 cannot see chunks from device 2")
     void deviceCannotSeeOtherDeviceChunks() throws Exception {
         mac2.upsert("secret.txt", 0, "abc123");
 
-        // mac1 hat das nie eingefügt — muss null zurückgeben
+        // mac1 never inserted this, must return null
         assertNull(mac1.getStatus("secret.txt", 0));
     }
 
     @Test
-    @DisplayName("removeFile löscht nur Chunks des eigenen Geräts")
+    @DisplayName("removeFile deletes only the current device's chunks")
     void removeFileOnlyAffectsOwnDevice() throws Exception {
         mac1.upsert("file.txt", 0, "abc123");
         mac2.upsert("file.txt", 0, "abc123");
 
         mac1.removeFile("file.txt");
 
-        // mac1 gelöscht, mac2 unberührt
+        // mac1 deleted, mac2 untouched
         assertNull(mac1.getStatus("file.txt", 0));
         assertNotNull(mac2.getStatus("file.txt", 0));
     }
 
     @Test
-    @DisplayName("countPending zählt nur PENDING Chunks des eigenen Geräts")
+    @DisplayName("countPending counts only PENDING chunks for the current device")
     void countPendingOnlyCountsOwnDevice() throws Exception {
         mac1.upsert("file.txt", 0, "h0");
         mac1.upsert("file.txt", 1, "h1");
@@ -107,13 +107,13 @@ class SyncManifestTest {
         mac2.upsert("file.txt", 1, "h1");
         mac2.upsert("file.txt", 2, "h2");
 
-        // mac1 hat 1 pending, mac2 hat 3 pending — getrennt!
+        // mac1 has 1 pending, mac2 has 3 pending separately!
         assertEquals(1, mac1.countPending("file.txt"));
         assertEquals(3, mac2.countPending("file.txt"));
     }
 
     @Test
-    @DisplayName("getDeviceId gibt die korrekte ID zurück")
+    @DisplayName("getDeviceId returns the correct ID")
     void getDeviceIdReturnsCorrectId() throws Exception {
         assertEquals("mac-amaad", mac1.getDeviceId());
         assertEquals("windows-amaad",  mac2.getDeviceId());

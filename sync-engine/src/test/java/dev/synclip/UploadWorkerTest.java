@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests UploadWorker with a fake MinIO client — no real server needed.
+ * Tests UploadWorker with a fake MinIO client, no real server needed.
  * We mock the upload operation to test parallel execution and retry logic.
  */
 class UploadWorkerTest {
@@ -25,13 +25,13 @@ class UploadWorkerTest {
     }
 
     @Test
-    @DisplayName("bereits hochgeladene Chunks werden übersprungen")
+    @DisplayName("already uploaded chunks are skipped")
     void alreadyUploadedChunksAreSkipped() throws Exception {
-        // Chunk 0 ist bereits DONE
+        // Chunk 0 is already DONE
         manifest.upsert("file.txt", 0, "h0");
         manifest.markDone("file.txt", 0);
 
-        // Chunk 1 ist PENDING
+        // Chunk 1 is PENDING
         manifest.upsert("file.txt", 1, "h1");
 
         AtomicInteger uploadCount = new AtomicInteger(0);
@@ -43,7 +43,7 @@ class UploadWorkerTest {
         );
         worker.uploadAll("file.txt", chunks);
 
-        // Nur Chunk 1 wurde hochgeladen
+        // Only chunk 1 was uploaded
         assertEquals(1, uploadCount.get());
     }
 
@@ -68,7 +68,7 @@ class UploadWorkerTest {
     }
 
     @Test
-    @DisplayName("leere Chunk-Liste — kein Upload")
+    @DisplayName("empty chunk list does nothing")
     void emptyChunkListDoesNothing() throws Exception {
         AtomicInteger uploadCount = new AtomicInteger(0);
         FakeUploadWorker worker = new FakeUploadWorker(manifest, uploadCount);
@@ -92,7 +92,7 @@ class UploadWorkerTest {
     }
 
     // -------------------------------------------------------------------------
-    // Fake UploadWorker — kein echter MinIO Server nötig
+    // Fake UploadWorker, no real MinIO server required
     // -------------------------------------------------------------------------
 
     /**

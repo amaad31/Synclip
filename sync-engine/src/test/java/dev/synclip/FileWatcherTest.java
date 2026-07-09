@@ -89,7 +89,7 @@ class FileWatcherTest {
         watcher.start();
         Thread.sleep(100);
 
-        // Create subdirectory AFTER watcher started — must auto-register
+        // Create subdirectory AFTER watcher started, must auto-register
         Path newDir = Files.createDirectory(tempDir.resolve("newFolder"));
         Thread.sleep(1000);
         Files.writeString(newDir.resolve("note.txt"), "hello");
@@ -108,7 +108,7 @@ class FileWatcherTest {
     }
 
     @Test
-    @DisplayName("start() is idempotent — calling twice does not crash")
+    @DisplayName("start() is idempotent, calling twice does not crash")
     void startIsIdempotent() throws Exception {
         FileWatcher watcher = new FileWatcher(tempDir, (e, p) -> {});
         watcher.start();

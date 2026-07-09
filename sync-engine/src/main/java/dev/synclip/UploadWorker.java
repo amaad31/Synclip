@@ -12,8 +12,8 @@ import java.util.concurrent.*;
  * Flow:
  *   1. Get all PENDING chunks from SyncManifest
  *   2. Submit each chunk as a separate upload task to the thread pool
- *   3. On success → markDone() in SyncManifest
- *   4. On failure → RetryPolicy retries up to 3 times
+ *   3. On success -> markDone() in SyncManifest
+ *   4. On failure -> RetryPolicy retries up to 3 times
  */
 public class UploadWorker implements AutoCloseable {
 

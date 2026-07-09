@@ -10,9 +10,9 @@ import java.util.concurrent.Callable;
  *   RetryPolicy retry = new RetryPolicy(3, 100);
  *   retry.execute(() -> uploadChunk(chunk));
  *
- * Attempt 1 fails → wait 100ms
- * Attempt 2 fails → wait 200ms
- * Attempt 3 fails → throw exception
+ * Attempt 1 fails -> wait 100ms
+ * Attempt 2 fails -> wait 200ms
+ * Attempt 3 fails -> throw exception
  */
 public class RetryPolicy {
 
@@ -43,7 +43,7 @@ public class RetryPolicy {
                 lastException = e;
                 if (attempt < maxAttempts) {
                     Thread.sleep(delay);
-                    delay *= 2; // exponential backoff: 100ms → 200ms → 400ms
+                    delay *= 2; // exponential backoff: 100ms -> 200ms -> 400ms
                 }
             }
         }

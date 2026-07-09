@@ -48,8 +48,8 @@ public class SyncManifest implements AutoCloseable {
 
     /**
      * Inserts or updates a chunk record for this device.
-     * Same hash → status stays DONE (delta sync).
-     * Changed hash → status resets to PENDING (needs re-upload).
+     * Same hash -> status stays DONE (delta sync).
+     * Changed hash -> status resets to PENDING (needs re-upload).
      */
     public void upsert(String filePath, int chunkIndex, String hash) throws SQLException {
         String existing = getHash(filePath, chunkIndex);

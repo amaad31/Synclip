@@ -1,11 +1,20 @@
 package dev.synclip;
 
 import org.junit.jupiter.api.*;
+import java.awt.GraphicsEnvironment;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ClipboardManagerTest {
 
     private ClipboardManager clipboard;
+
+    @BeforeAll
+    static void checkDisplay() {
+        org.junit.jupiter.api.Assumptions.assumeFalse(
+            GraphicsEnvironment.isHeadless(),
+            "No display available -> skipping clipboard tests"
+        );
+    }
 
     @BeforeEach
     void setUp() {

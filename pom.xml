@@ -10,6 +10,7 @@
     <modules>
         <module>common</module>
         <module>sync-engine</module>
+        <module>clipboard</module>
     </modules>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

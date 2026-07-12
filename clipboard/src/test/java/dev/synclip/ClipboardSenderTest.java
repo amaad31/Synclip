@@ -6,12 +6,21 @@ import java.net.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.jupiter.api.Assertions.*;
+import java.awt.GraphicsEnvironment;
 
 class ClipboardSenderTest {
 
     private CryptoHelper crypto;
     private ClipboardManager clipboardManager;
     private ClipboardSender sender;
+
+    @BeforeAll
+    static void checkDisplay() {
+        Assumptions.assumeFalse(
+            GraphicsEnvironment.isHeadless(),
+            "No display available -> skipping clipboard tests"
+        );
+    }
 
     @BeforeEach
     void setUp() throws Exception {

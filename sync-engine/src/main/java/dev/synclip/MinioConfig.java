@@ -19,9 +19,9 @@ public class MinioConfig {
 
     public MinioConfig(String endpoint, String accessKey,
                        String secretKey, String bucketName) {
-        this.endpoint   = endpoint;
-        this.accessKey  = accessKey;
-        this.secretKey  = secretKey;
+        this.endpoint = endpoint;
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
         this.bucketName = bucketName;
     }
 

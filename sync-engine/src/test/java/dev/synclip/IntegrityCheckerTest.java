@@ -3,12 +3,12 @@ package dev.synclip;
 import java.nio.file.*;
 import java.util.*;
 
-public class IntegrityChecker {
+public class IntegrityCheckerTest {
 
     private final Chunker chunker;
     private final SyncManifest manifest;
 
-    public IntegrityChecker(Chunker chunker, SyncManifest manifest) {
+    public IntegrityCheckerTest(Chunker chunker, SyncManifest manifest) {
         this.chunker  = chunker;
         this.manifest = manifest;
     }

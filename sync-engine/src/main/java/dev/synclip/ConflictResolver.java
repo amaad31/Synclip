@@ -21,8 +21,8 @@ public class ConflictResolver {
     /**
      * Resolves a conflict between a local and remote version of a file.
      *
-     * @param localFile      path to the local file
-     * @param localModified  last modified timestamp of local file
+     * @param localFile path to the local file
+     * @param localModified last modified timestamp of local file
      * @param remoteModified last modified timestamp of remote file
      * @return resolution strategy that was applied
      */

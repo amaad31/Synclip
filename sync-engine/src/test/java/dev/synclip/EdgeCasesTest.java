@@ -126,7 +126,7 @@ class EdgeCasesTest {
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("rapid edits — only final state is pending after each sync")
+    @DisplayName("rapid edits  only final state is pending after each sync")
     void rapidEditsOnlyFinalStateIsPending() throws Exception {
         Path file = Files.writeString(tempDir.resolve("rapid.txt"), "version 1");
 
@@ -138,7 +138,7 @@ class EdgeCasesTest {
         // Rapid edits
         Files.writeString(file, "version 2");
         Files.writeString(file, "version 3");
-        Files.writeString(file, "version 4 — final");
+        Files.writeString(file, "version 4  final");
 
         // Only final state matters
         pending = deltaSync.pendingChunks(file);

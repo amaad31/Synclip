@@ -7,7 +7,8 @@ import java.security.*;
 /**
  * AES-256-GCM authenticated encryption helper.
  *
- * Why AES-GCM?
+ * // #FOR_ME
+ * Why AES-GCM 
  *  - AES-256: military-grade symmetric encryption
  *  - GCM mode: also authenticates the ciphertext, detects tampering
  *  - Each encryption uses a random 12-byte IV so the same plaintext
@@ -18,10 +19,10 @@ import java.security.*;
  */
 public class CryptoHelper {
 
-    public static final int KEY_SIZE_BITS  = 256;
-    public static final int IV_SIZE_BYTES  = 12;   // 96-bit IV recommended for GCM
-    public static final int TAG_SIZE_BITS  = 128;  // 16-byte authentication tag
-    private static final String ALGORITHM  = "AES/GCM/NoPadding";
+    public static final int KEY_SIZE_BITS = 256;
+    public static final int IV_SIZE_BYTES = 12;   // 96-bit IV recommended for GCM
+    public static final int TAG_SIZE_BITS = 128;  // 16-byte authentication tag
+    private static final String ALGORITHM = "AES/GCM/NoPadding";
 
     private final SecretKey key;
     private final SecureRandom rng = new SecureRandom();

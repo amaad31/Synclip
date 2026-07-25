@@ -4,7 +4,7 @@ import io.minio.MinioClient;
 
 /**
  * Builds and holds the MinIO client configuration.
- * All connection details in one place — easy to change for different environments.
+ * All connection details in one place  easy to change for different environments.
  *
  * Local dev:   endpoint = http://localhost:9000
  * Raspberry Pi: endpoint = http://192.168.1.100:9000
@@ -19,9 +19,9 @@ public class MinioConfig {
 
     public MinioConfig(String endpoint, String accessKey,
                        String secretKey, String bucketName) {
-        this.endpoint   = endpoint;
-        this.accessKey  = accessKey;
-        this.secretKey  = secretKey;
+        this.endpoint = endpoint;
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
         this.bucketName = bucketName;
     }
 
@@ -36,7 +36,7 @@ public class MinioConfig {
     public String getBucketName() { return bucketName; }
     public String getEndpoint()   { return endpoint; }
 
-    /** Default local development config — MinIO running via Docker. */
+    /** Default local development config  MinIO running via Docker. */
     public static MinioConfig local() {
         return new MinioConfig(
                 "http://localhost:9000",

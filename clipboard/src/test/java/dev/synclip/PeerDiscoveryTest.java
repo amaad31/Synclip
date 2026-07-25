@@ -74,7 +74,7 @@ class PeerDiscoveryTest {
     }
 
     @Test
-    @DisplayName("own broadcast is ignored — device does not discover itself")
+    @DisplayName("own broadcast is ignored  device does not discover itself")
     void ownBroadcastIsIgnored() throws Exception {
         var discovered = new CopyOnWriteArrayList<PeerDiscovery.PeerInfo>();
         var discovery  = new PeerDiscovery("mac-self", 9001, discovered::add);

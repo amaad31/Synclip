@@ -58,7 +58,7 @@ class EndToEndTest {
         fakeUpload(file.toAbsolutePath().toString(), pending);
         uploadedChunks.clear();
 
-        // Second sync — nothing changed
+        // Second sync  nothing changed
         pending = deltaSync.pendingChunks(file);
         fakeUpload(file.toAbsolutePath().toString(), pending);
 
@@ -71,7 +71,7 @@ class EndToEndTest {
         Path file = Files.writeString(watchDir.resolve("doc.txt"),
                 "a".repeat(200)); // 2 chunks
 
-        // First sync — upload all
+        // First sync  upload all
         List<Chunker.Chunk> pending = deltaSync.pendingChunks(file);
         fakeUpload(file.toAbsolutePath().toString(), pending);
         uploadedChunks.clear();
@@ -79,7 +79,7 @@ class EndToEndTest {
         // Modify only second chunk
         Files.writeString(file, "a".repeat(100) + "b".repeat(100));
 
-        // Second sync — only chunk 1 should be re-uploaded
+        // Second sync  only chunk 1 should be re-uploaded
         pending = deltaSync.pendingChunks(file);
         fakeUpload(file.toAbsolutePath().toString(), pending);
 

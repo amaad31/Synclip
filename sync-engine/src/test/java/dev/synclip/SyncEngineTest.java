@@ -49,7 +49,7 @@ class SyncEngineTest {
                 manifest.getStatus(file.toAbsolutePath().toString(), 0));
 
         // Modify file
-        Files.writeString(file, "version 2 — completely different");
+        Files.writeString(file, "version 2  completely different");
         engine.handleEvent(FileWatcher.Event.MODIFIED, file);
 
         // Hash changed -> back to PENDING
@@ -85,7 +85,7 @@ class SyncEngineTest {
     }
 
     // -------------------------------------------------------------------------
-    // Fake SyncEngine — no real UploadWorker required
+    // Fake SyncEngine  no real UploadWorker required
     // -------------------------------------------------------------------------
 
     static class FakeSyncEngine {

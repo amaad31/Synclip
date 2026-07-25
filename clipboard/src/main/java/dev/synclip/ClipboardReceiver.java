@@ -36,7 +36,7 @@ public class ClipboardReceiver implements AutoCloseable {
     }
 
     /**
-     * Starts the receiver — listens for incoming connections in the background.
+     * Starts the receiver  listens for incoming connections in the background.
      * Returns immediately.
      */
     public void start() throws IOException {

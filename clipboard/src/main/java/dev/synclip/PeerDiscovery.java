@@ -97,7 +97,7 @@ public class PeerDiscovery implements AutoCloseable {
                 handleMessage(message, packet.getAddress());
 
             } catch (SocketTimeoutException ignored) {
-                // normal — keep looping
+                // normal  keep looping
             } catch (IOException e) {
                 if (running) System.err.println("[PeerDiscovery] Receive error: " + e.getMessage());
             }

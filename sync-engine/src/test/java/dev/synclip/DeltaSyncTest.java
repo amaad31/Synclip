@@ -68,7 +68,7 @@ class DeltaSyncTest {
             manifest.markDone(filePath, chunk.index());
         }
 
-        // Modify file — second chunk changes
+        // Modify file  second chunk changes
         Files.writeString(file, "a".repeat(100) + "b".repeat(100));
 
         List<Chunker.Chunk> pending = deltaSync.pendingChunks(file);

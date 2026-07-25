@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * When the connection is restored, all queued events are flushed
  * and processed in order.
  *
- * Thread-safe — uses ConcurrentLinkedQueue internally.
+ * Thread-safe  uses ConcurrentLinkedQueue internally.
  */
 public class OfflineQueue {
 
@@ -32,7 +32,7 @@ public class OfflineQueue {
 
     /**
      * Enqueues a file event if offline.
-     * If online, returns false — caller should process immediately.
+     * If online, returns false  caller should process immediately.
      */
     public boolean enqueue(FileWatcher.Event type, Path path) {
         if (online) return false;
@@ -52,7 +52,7 @@ public class OfflineQueue {
     }
 
     /**
-     * Marks the device as offline — subsequent events will be queued.
+     * Marks the device as offline  subsequent events will be queued.
      */
     public void goOffline() {
         online = false;

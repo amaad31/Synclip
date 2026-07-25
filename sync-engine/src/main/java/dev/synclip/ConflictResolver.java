@@ -8,8 +8,8 @@ import java.time.Instant;
  * Resolves file sync conflicts when two devices edit the same file offline.
  *
  * Strategy:
- *   1. Last-Write-Wins — the file with the newer timestamp wins
- *   2. Conflict Copy   — if timestamps are equal, keep both versions
+ *   1. Last-Write-Wins  the file with the newer timestamp wins
+ *   2. Conflict Copy    if timestamps are equal, keep both versions
  *
  * Conflict copy naming:
  *   document.txt → document (conflict 2026-07-13).txt
@@ -31,16 +31,16 @@ public class ConflictResolver {
                               Instant remoteModified) throws IOException {
 
         if (localModified.isAfter(remoteModified)) {
-            // Local is newer — keep local, discard remote
+            // Local is newer  keep local, discard remote
             return Resolution.LOCAL_WINS;
         }
 
         if (remoteModified.isAfter(localModified)) {
-            // Remote is newer — remote will overwrite local
+            // Remote is newer  remote will overwrite local
             return Resolution.REMOTE_WINS;
         }
 
-        // Same timestamp — keep both as conflict copies
+        // Same timestamp  keep both as conflict copies
         createConflictCopy(localFile);
         return Resolution.CONFLICT_COPY;
     }

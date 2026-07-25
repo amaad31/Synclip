@@ -79,7 +79,7 @@ class ClipboardSenderTest {
     }
 
     @Test
-    @DisplayName("payload is encrypted — not readable as plaintext")
+    @DisplayName("payload is encrypted  not readable as plaintext")
     void payloadIsEncrypted() throws Exception {
         String secret = "top secret clipboard content";
         clipboardManager.writeText(secret);

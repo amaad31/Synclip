@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class OfflineQueueTest {
 
     @Test
-    @DisplayName("enqueue returns false when online — event should be processed immediately")
+    @DisplayName("enqueue returns false when online  event should be processed immediately")
     void enqueueReturnsFalseWhenOnline() {
         OfflineQueue queue = new OfflineQueue(true);
         boolean queued = queue.enqueue(FileWatcher.Event.CREATED, Path.of("file.txt"));
@@ -67,7 +67,7 @@ class OfflineQueueTest {
     }
 
     @Test
-    @DisplayName("goOnline + enqueue returns false — back to immediate processing")
+    @DisplayName("goOnline + enqueue returns false  back to immediate processing")
     void goOnlineResumesImmediateProcessing() {
         OfflineQueue queue = new OfflineQueue(false);
         queue.goOnline();

@@ -40,7 +40,7 @@ public class SyncEngine implements AutoCloseable {
         }
     }
 
-    /** Starts all FileWatchers — begins listening for file changes. */
+    /** Starts all FileWatchers  begins listening for file changes. */
     public void start() throws IOException {
         for (FileWatcher watcher : watchers) {
             watcher.start();
@@ -73,7 +73,7 @@ public class SyncEngine implements AutoCloseable {
     }
 
     /**
-     * Syncs a file — chunk it, update manifest, upload PENDING chunks.
+     * Syncs a file  chunk it, update manifest, upload PENDING chunks.
      */
     private void syncFile(Path path) throws Exception {
         if (!Files.exists(path) || !Files.isRegularFile(path)) return;
@@ -81,7 +81,7 @@ public class SyncEngine implements AutoCloseable {
         String filePath = path.toAbsolutePath().toString();
         List<Chunker.Chunk> chunks = chunker.split(path);
 
-        // Upsert each chunk — changed ones become PENDING
+        // Upsert each chunk  changed ones become PENDING
         for (Chunker.Chunk chunk : chunks) {
             manifest.upsert(filePath, chunk.index(), chunk.hash());
         }

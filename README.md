@@ -27,7 +27,7 @@ MinIO Server (Raspberry Pi / Docker)
 ### Run with Docker
 
 ```bash
-git clone https://github.com/amaadkhan/synclip.git
+git clone https://github.com/amaad31/synclip.git
 cd synclip
 docker-compose up
 ```

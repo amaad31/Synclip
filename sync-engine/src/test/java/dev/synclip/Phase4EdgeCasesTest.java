@@ -60,7 +60,7 @@ class Phase4EdgeCasesTest {
         }
         data[201] = (byte) 0xFF;
         Files.write(file, data);
-        IntegrityChecker checker = new IntegrityChecker(chunker, manifest);
+        IntegrityCheckerTest checker = new IntegrityCheckerTest(chunker, manifest);
         List<Integer> corrupted = checker.verify(file);
         assertEquals(1, corrupted.size());
         assertEquals(2, corrupted.get(0));
